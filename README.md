@@ -24,20 +24,18 @@ Clone the Repository:
 
 git clone https://github.com/nimesh7814/Unsloth-Finetune.git
 cd Unsloth-Finetune
-Use code with caution.
 
 ## Install Dependencies:
 Install the required libraries using pip:
 
 pip install -r requirements.txt
-Use code with caution.
 
-Set Hugging Face Token:
+
+## Set Hugging Face Token:
 
 Before running the script, ensure you have set your Hugging Face access token:
 
-## huggingface-cli login
-Use code with caution.
+huggingface-cli login
 
 Configure Run Settings:
 
