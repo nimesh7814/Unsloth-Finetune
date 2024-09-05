@@ -1,14 +1,26 @@
 import torch
-from transformers import TrainingArguments, Trainer
+from transformers import TrainingArguments, Trainer, AutoModelForCausalLM
+from unsloth import FastLanguageModel
+
 
 # Function to initialize the model
 def initialize_model(model_name, max_seq_length, device, hf_token):
-    from unsloth import FastLanguageModel
     print(f"\nInitializing model: {model_name}")
-    model = FastLanguageModel.get_peft_model(model_name, hf_token=hf_token, device=device)
+
+    # Load the base language model
+    base_model = AutoModelForCausalLM.from_pretrained(model_name, use_auth_token=hf_token)
+
+    # Apply PEFT to the base model
+    model = FastLanguageModel.get_peft_model(
+        model=base_model,
+        hf_token=hf_token,
+        device=device
+    )
+
     tokenizer = model.tokenizer
     tokenizer.model_max_length = max_seq_length
     return model, tokenizer
+
 
 # Function to show current GPU memory stats
 def show_memory_stats():
@@ -17,6 +29,7 @@ def show_memory_stats():
     total_memory = round(gpu_stats.total_memory / 1024 / 1024 / 1024, 3)
     print(f"GPU = {gpu_stats.name}. Max memory = {total_memory} GB.")
     print(f"{reserved_memory} GB of memory reserved.")
+
 
 # Function to fine-tune the model
 def fine_tune_model(model, tokenizer, dataset, device, training_args):
@@ -42,6 +55,7 @@ def fine_tune_model(model, tokenizer, dataset, device, training_args):
     )
     trainer.train()
 
+
 # Function to save the model using selected quantization methods
 def save_model_with_quantization(model, tokenizer, quant_methods, base_dir):
     for quant in quant_methods:
@@ -49,6 +63,7 @@ def save_model_with_quantization(model, tokenizer, quant_methods, base_dir):
         print(f"\nSaving model with {quant} quantization to {quantized_dir}...")
         model.save_pretrained(quantized_dir)
         tokenizer.save_pretrained(quantized_dir)
+
 
 # Function to handle chat after training
 def handle_chat_after_training(chat_choice, model, tokenizer, device):
@@ -63,4 +78,5 @@ def handle_chat_after_training(chat_choice, model, tokenizer, device):
                 outputs = model.generate(**inputs, max_length=512)
                 response = tokenizer.decode(outputs[0], skip_special_tokens=True)
                 print(f"Model: {response}")
+
         chat_with_model_transformers()
