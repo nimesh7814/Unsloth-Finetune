@@ -1,5 +1,3 @@
-# User Settings (run.py)
-
 import os
 import torch
 from Unsloth import (
@@ -14,7 +12,7 @@ from datasets import load_dataset
 # Minimum user settings
 
 # 1. Model name (Choose from supported models, see Help.txt for details)
-model_name = "unsloth/Phi-3-mini-4k-instruct"
+model_name = "unsloth/Phi-3-mini-4k-instruct"  # Make sure this is compatible with PEFT
 
 # 2. Hugging Face token (required for accessing some models)
 hf_token = "your_huggingface_token"
@@ -44,13 +42,13 @@ base_dir = os.getcwd()
 print(f"\nLoading the dataset from Hugging Face repository: {dataset_repo}...")
 dataset = load_dataset(dataset_repo)
 
-# Set the device to use GPU 0
-device = torch.device("cuda:0")
+# Set the device to use GPU 0. If you don't have a GPU, set device = "cpu"
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Initialize and fine-tune the model
 print("\nInitial GPU Memory Stats:")
 show_memory_stats()
-torch.cuda.empty_cache()
+torch.cuda.empty_cache()  # Clear GPU cache before initializing the model
 
 # Initialize the model
 model, tokenizer = initialize_model(
